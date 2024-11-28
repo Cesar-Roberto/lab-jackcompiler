@@ -63,6 +63,25 @@ public class ScannerTest extends TestSupport {
         assertEquals(expectedResult, result.toString());
     }
 
+    @Test
+    public void testScannerWithArrayTest() throws IOException {
+        var input = fromFile("ArrayTest/Main.jack");
+        var expectedResult =  fromFile("ArrayTest/MainT.xml");
+
+        var scanner = new Scanner(input.getBytes(StandardCharsets.UTF_8));
+        var result = new StringBuilder();
+        
+        result.append("<tokens>\r\n");
+
+        for (Token tk = scanner.nextToken(); tk.type !=TokenType.EOF; tk = scanner.nextToken()) {
+            result.append(String.format("%s\r\n",tk.toString()));
+        }
+        
+        result.append("</tokens>\r\n");
+        System.out.println(result.toString());
+        assertEquals(expectedResult, result.toString());
+    }
+
     
     
 }
