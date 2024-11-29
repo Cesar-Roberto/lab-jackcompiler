@@ -1,2 +1,5 @@
-mvn package
-java -cp target/jackcompiler-1.0-SNAPSHOT.jar br.ufma.ecp.App
+## Analiador léxico
+Desenvolvido durante a disciplina de Compiladores - 2024.2
+
+Participantes:<br>
+[Ana Julia Alencar](https://github.com/anaahnb)
