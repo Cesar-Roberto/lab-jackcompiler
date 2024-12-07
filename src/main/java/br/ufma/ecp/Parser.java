@@ -3,27 +3,28 @@ package br.ufma.ecp;
 import br.ufma.ecp.token.Token;
 import br.ufma.ecp.token.TokenType;
 
-
 public class Parser {
-    private static class ParseError extends RuntimeException {}
+    private static class ParseError extends RuntimeException {
+    }
+
     private Scanner scan;
     private Token currentToken;
     private Token peekToken;
     private StringBuilder xmlOutput = new StringBuilder();
-    
-    public Parser (byte[] input) {
+
+    public Parser(byte[] input) {
         scan = new Scanner(input);
         nextToken();
-        
+
     }
 
-    private void nextToken () {
+    public void parse() {
+        expr();
+    }
+
+    private void nextToken() {
         currentToken = peekToken;
         peekToken = scan.nextToken();
-    }
-
-    public void parse () {
-        expr();
     }
 
     public String XMLOutput() {
@@ -34,24 +35,12 @@ public class Parser {
         xmlOutput.append(String.format("<%s>\r\n", nterminal));
     }
 
-    private void expectPeek(TokenType... types) {
-        for (TokenType type : types) {
-            if (peekToken.type == type) {
-                expectPeek(type);
-                return;
-            }
-        }
-
-       throw error(peekToken, "Expected a statement");
-
-    }
-
     private void expectPeek(TokenType type) {
         if (peekToken.type == type) {
             nextToken();
             xmlOutput.append(String.format("%s\r\n", currentToken.toString()));
         } else {
-            throw error(peekToken, "Expected "+type.name());
+            throw error(peekToken, "Expected " + type.name());
         }
     }
 
@@ -64,9 +53,9 @@ public class Parser {
     }
 
     private static void report(int line, String where,
-        String message) {
-            System.err.println(
-            "[line " + line + "] Error" + where + ": " + message);
+            String message) {
+        System.err.println(
+                "[line " + line + "] Error" + where + ": " + message);
     }
 
     private ParseError error(Token token, String message) {
@@ -81,50 +70,63 @@ public class Parser {
     void parseTerm() {
         printNonTerminal("term");
         switch (peekToken.type) {
-          case NUMBER:  
-            expectPeek(TokenType.NUMBER);
-            break;
-          case STRING:
-            expectPeek(TokenType.STRING);
-            break;
-          case FALSE:
-          case NULL:
-          case TRUE:
-            expectPeek(TokenType.FALSE, TokenType.NULL, TokenType.TRUE);
-            break;
-          case THIS:
-            expectPeek(TokenType.THIS);
-            break;
-          case IDENT:
-            expectPeek(TokenType.IDENT);
-            break;
-          default:
-            throw error(peekToken, "term expected");
+            case NUMBER:
+                expectPeek(TokenType.NUMBER);
+                break;
+            case STRING:
+                expectPeek(TokenType.STRING);
+                break;
+            case FALSE:
+            case NULL:
+            case TRUE:
+                expectPeek(TokenType.FALSE, TokenType.NULL, TokenType.TRUE);
+                break;
+            case THIS:
+                expectPeek(TokenType.THIS);
+                break;
+            case IDENT:
+                expectPeek(TokenType.IDENT);
+                break;
+            default:
+                throw error(peekToken, "term expected");
         }
-    
-        printNonTerminal("/term");
-      }
 
+        printNonTerminal("/term");
+    }
+
+    static public boolean isOperator(String op) {
+        return op != "" && "+-*/<>=~&|".contains(op);
+    }
+
+    void parseExpression() {
+        printNonTerminal("expression");
+        parseTerm();
+        while (isOperator(peekToken.lexeme)) {
+            expectPeek(peekToken.type);
+            parseTerm();
+        }
+        printNonTerminal("/expression");
+    }
 
     void expr() {
         number();
         oper();
     }
 
-    void number () {
+    void number() {
         System.out.println(currentToken.lexeme);
         match(TokenType.NUMBER);
     }
 
-   private void match(TokenType t) {
+    private void match(TokenType t) {
         if (currentToken.type == t) {
             nextToken();
-        }else {
+        } else {
             throw new Error("syntax error");
         }
-   }
+    }
 
-    void oper () {
+    void oper() {
         if (currentToken.type == TokenType.PLUS) {
             match(TokenType.PLUS);
             number();
