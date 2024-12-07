@@ -24,11 +24,11 @@ public class ParserTest extends TestSupport {
         <integerConstant> 10 </integerConstant>
         </term>
         """;
-            
+
         var result = parser.XMLOutput();
         expectedResult = expectedResult.replaceAll("  ", "");
         result = result.replaceAll("\r", "");
-        assertEquals(expectedResult, result);    
+        assertEquals(expectedResult, result);
 
     }
 
@@ -38,18 +38,18 @@ public class ParserTest extends TestSupport {
         var input = "varName;";
         var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
         parser.parseTerm();
-      
+
         var expectedResult =  """
           <term>
           <identifier> varName </identifier>
           </term>
           """;
-              
+
           var result = parser.XMLOutput();
           expectedResult = expectedResult.replaceAll("  ", "");
           result = result.replaceAll("\r", "");
-          assertEquals(expectedResult, result);    
-  
+          assertEquals(expectedResult, result);
+
     }
 
 
@@ -59,18 +59,17 @@ public class ParserTest extends TestSupport {
         var input = "\"Hello World\"";
         var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
         parser.parseTerm();
-    
+
         var expectedResult =  """
           <term>
           <stringConstant> Hello World </stringConstant>
           </term>
           """;
-              
+
           var result = parser.XMLOutput();
           expectedResult = expectedResult.replaceAll("  ", "");
           result = result.replaceAll("\r", "");
-          assertEquals(expectedResult, result);    
-  
+          assertEquals(expectedResult, result);
     }
 
     @Test
@@ -78,7 +77,7 @@ public class ParserTest extends TestSupport {
         var input = "10+20";
         var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
         parser.parseExpression();
-        
+
         var expectedResult =  """
           <expression>
           <term>
@@ -90,11 +89,11 @@ public class ParserTest extends TestSupport {
           </term>
           </expression>
           """;
-              
+
           var result = parser.XMLOutput();
-          result = result.replaceAll("\r", ""); 
+          result = result.replaceAll("\r", "");
           expectedResult = expectedResult.replaceAll("  ", "");
-          assertEquals(expectedResult, result);    
+          assertEquals(expectedResult, result);
 
     }
 

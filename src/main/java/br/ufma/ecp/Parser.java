@@ -1,5 +1,7 @@
 package br.ufma.ecp;
 
+import java.util.Arrays;
+
 import br.ufma.ecp.token.Token;
 import br.ufma.ecp.token.TokenType;
 
@@ -35,14 +37,20 @@ public class Parser {
         xmlOutput.append(String.format("<%s>\r\n", nterminal));
     }
 
-    private void expectPeek(TokenType type) {
-        if (peekToken.type == type) {
-            nextToken();
-            xmlOutput.append(String.format("%s\r\n", currentToken.toString()));
+    private void expectPeek(TokenType... types) {
+        if (Arrays.stream(types).anyMatch(type -> peekToken.type == type)) {
+            nextTokenAndAppend();
         } else {
-            throw error(peekToken, "Expected " + type.name());
+            throw error(peekToken, "Expected one of: " + Arrays.toString(types));
         }
     }
+
+    // Faz parte do expectPeek
+    private void nextTokenAndAppend() {
+        nextToken();
+        xmlOutput.append(String.format("%s\r\n", currentToken));
+    }
+
 
     boolean currentTokenIs(TokenType type) {
         return currentToken.type == type;
