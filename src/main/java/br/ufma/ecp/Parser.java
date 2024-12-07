@@ -116,6 +116,23 @@ public class Parser {
         printNonTerminal("/expression");
     }
 
+    void parseLet() {
+        printNonTerminal("letStatement");
+        expectPeek(TokenType.LET);
+        expectPeek(TokenType.IDENT);
+
+        if (peekTokenIs(TokenType.LBRACKET)) {
+            expectPeek(TokenType.LBRACKET);
+            parseExpression();
+            expectPeek(TokenType.RBRACKET);
+        }
+
+        expectPeek(TokenType.EQ);
+        parseExpression();
+        expectPeek(TokenType.SEMICOLON);
+        printNonTerminal("/letStatement");
+    }
+
     void expr() {
         number();
         oper();
