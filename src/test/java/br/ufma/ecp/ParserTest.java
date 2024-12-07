@@ -117,11 +117,11 @@ public class ParserTest extends TestSupport {
           </term>
           </expression>
         <symbol> ; </symbol>
-      </letStatement> 
+      </letStatement>
 				""";
         var result = parser.XMLOutput();
         expectedResult = expectedResult.replaceAll("  ", "");
-        result = result.replaceAll("\r", ""); // no codigo em linux não tem o retorno de carro
+        result = result.replaceAll("\r", "");
         assertEquals(expectedResult, result);
     }
 
@@ -130,17 +130,17 @@ public class ParserTest extends TestSupport {
         var input = "hello()";
         var parser = new Parser(input.getBytes(StandardCharsets.UTF_8));
         parser.parseSubroutineCall();
-        
+
         var expectedResult =  """
           <identifier> hello </identifier>
           <symbol> ( </symbol>
           <symbol> ) </symbol>
           """;
-              
+
           var result = parser.XMLOutput();
-          result = result.replaceAll("\r", ""); 
+          result = result.replaceAll("\r", "");
           expectedResult = expectedResult.replaceAll("  ", "");
-          assertEquals(expectedResult, result);    
+          assertEquals(expectedResult, result);
 
     }
 
@@ -161,9 +161,8 @@ public class ParserTest extends TestSupport {
                 """;
         var result = parser.XMLOutput();
         expectedResult = expectedResult.replaceAll("  ", "");
-        result = result.replaceAll("\r", ""); // no codigo em linux não tem o retorno de carro
+        result = result.replaceAll("\r", "");
         assertEquals(expectedResult, result);
     }
-
 
 }

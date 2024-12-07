@@ -1,5 +1,13 @@
 package br.ufma.ecp;
 
+import static br.ufma.ecp.token.TokenType.DO;
+import static br.ufma.ecp.token.TokenType.IF;
+import static br.ufma.ecp.token.TokenType.LBRACKET;
+import static br.ufma.ecp.token.TokenType.LET;
+import static br.ufma.ecp.token.TokenType.RBRACKET;
+import static br.ufma.ecp.token.TokenType.RETURN;
+import static br.ufma.ecp.token.TokenType.WHILE;
+
 import java.util.Arrays;
 
 import br.ufma.ecp.token.Token;
@@ -144,6 +152,84 @@ public class Parser {
         parseSubroutineCall();
         expectPeek(TokenType.SEMICOLON);
         printNonTerminal("/doStatement");
+    }
+
+    public void parseIf() {
+        printNonTerminal("ifStatement");
+        expectPeek(TokenType.IF);
+        expectPeek(TokenType.LPAREN);
+        parseExpression();
+        expectPeek(TokenType.RPAREN);
+        expectPeek(TokenType.LBRACE);
+        parseStatements();
+        expectPeek(TokenType.RBRACE);
+        if (peekTokenIs(TokenType.ELSE)) {
+            expectPeek(TokenType.ELSE);
+            expectPeek(TokenType.LBRACE);
+            parseStatements();
+            expectPeek(TokenType.RBRACE);
+        }
+        printNonTerminal("/ifStatement");
+    }
+
+    public void parseWhile() {
+        printNonTerminal("whileStatement");
+        expectPeek(TokenType.WHILE);
+        expectPeek(TokenType.LPAREN);
+        parseExpression();
+        expectPeek(TokenType.RPAREN);
+        expectPeek(TokenType.LBRACE);
+        parseStatements();
+        expectPeek(TokenType.RBRACE);
+        printNonTerminal("/whileStatement");
+    }
+
+    public void parseReturn() {
+        printNonTerminal("returnStatement");
+        expectPeek(TokenType.RETURN);
+        if (peekTokenIs(TokenType.SEMICOLON)) {
+            expectPeek(TokenType.SEMICOLON);
+            printNonTerminal("/returnStatement");
+        } else {
+            parseExpression();
+            expectPeek(TokenType.SEMICOLON);
+            printNonTerminal("/returnStatement");
+        }
+    }
+
+    public void parseStatement() {
+        switch (peekToken.type) {
+            case LET:
+                parseLet();
+                break;
+            case WHILE:
+                parseWhile();
+                break;
+            case IF:
+                parseIf();
+                break;
+            case RETURN:
+                parseReturn();
+                break;
+            case DO:
+                parseDo();
+                break;
+            default:
+                throw error(peekToken, "Expected a statement");
+        }
+    }
+
+    public void parseStatements() {
+        printNonTerminal("statements");
+        while (peekToken.type == WHILE ||
+                peekToken.type == IF ||
+                peekToken.type == LET ||
+                peekToken.type == DO ||
+                peekToken.type == RETURN) {
+            parseStatement();
+        }
+
+        printNonTerminal("/statements");
     }
 
     void expr() {
