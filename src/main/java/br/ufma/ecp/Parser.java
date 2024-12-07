@@ -51,7 +51,6 @@ public class Parser {
         xmlOutput.append(String.format("%s\r\n", currentToken));
     }
 
-
     boolean currentTokenIs(TokenType type) {
         return currentToken.type == type;
     }
@@ -131,6 +130,20 @@ public class Parser {
         parseExpression();
         expectPeek(TokenType.SEMICOLON);
         printNonTerminal("/letStatement");
+    }
+
+    void parseSubroutineCall() {
+        expectPeek(TokenType.IDENT);
+        expectPeek(TokenType.LPAREN);
+        expectPeek(TokenType.RPAREN);
+    }
+
+    public void parseDo() {
+        printNonTerminal("doStatement");
+        expectPeek(TokenType.DO);
+        parseSubroutineCall();
+        expectPeek(TokenType.SEMICOLON);
+        printNonTerminal("/doStatement");
     }
 
     void expr() {
