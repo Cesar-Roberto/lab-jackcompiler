@@ -19,7 +19,7 @@ public enum TokenType {
 
      IDENT,
 
- 
+
      // keywords
      METHOD, WHILE, IF, CLASS,
      CONSTRUCTOR, FUNCTION, FIELD,

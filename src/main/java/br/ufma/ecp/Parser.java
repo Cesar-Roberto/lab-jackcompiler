@@ -2,9 +2,8 @@ package br.ufma.ecp;
 
 import static br.ufma.ecp.token.TokenType.DO;
 import static br.ufma.ecp.token.TokenType.IF;
-import static br.ufma.ecp.token.TokenType.LBRACKET;
 import static br.ufma.ecp.token.TokenType.LET;
-import static br.ufma.ecp.token.TokenType.RBRACKET;
+import static br.ufma.ecp.token.TokenType.LPAREN;
 import static br.ufma.ecp.token.TokenType.RETURN;
 import static br.ufma.ecp.token.TokenType.WHILE;
 
@@ -82,6 +81,7 @@ public class Parser {
         return new ParseError();
     }
 
+    // FALTA FINALIZAR
     void parseTerm() {
         printNonTerminal("term");
         switch (peekToken.type) {
@@ -101,6 +101,15 @@ public class Parser {
                 break;
             case IDENT:
                 expectPeek(TokenType.IDENT);
+
+                if (peekTokenIs(TokenType.LPAREN) || peekTokenIs(TokenType.DOT)) {
+                    parseSubroutineCall();
+                } else if (peekTokenIs(TokenType.LBRACKET)) {
+                    expectPeek(TokenType.LBRACKET);
+                    parseExpression();
+                    expectPeek(TokenType.RBRACKET);
+                }
+
                 break;
             default:
                 throw error(peekToken, "term expected");
@@ -142,8 +151,39 @@ public class Parser {
 
     void parseSubroutineCall() {
         expectPeek(TokenType.IDENT);
+        if (peekTokenIs(TokenType.LPAREN)) {
+            expectPeek(TokenType.LPAREN);
+            if (!peekTokenIs(TokenType.RPAREN)) {
+                parseExpressionList();
+            }
+            expectPeek(TokenType.RPAREN);
+        } else {
+            expectPeek(TokenType.DOT);
+            expectPeek(TokenType.IDENT);
+            expectPeek(TokenType.LPAREN);
+            if (!peekTokenIs(TokenType.RPAREN)) {
+                parseExpressionList();
+            }
+            expectPeek(TokenType.RPAREN);
+        }
+
         expectPeek(TokenType.LPAREN);
         expectPeek(TokenType.RPAREN);
+    }
+
+    void parseExpressionList() {
+        printNonTerminal("expressionList");
+
+        if (!peekTokenIs(TokenType.RPAREN)) {
+            parseExpression();
+        }
+
+        while (peekTokenIs(TokenType.COMMA)) {
+            expectPeek(TokenType.COMMA);
+            parseExpression();
+        }
+
+        printNonTerminal("/expressionList");
     }
 
     public void parseDo() {
@@ -260,6 +300,31 @@ public class Parser {
             match(TokenType.MINUS);
             number();
             System.out.println("sub");
+            oper();
+        } else if (currentToken.type == TokenType.LT) {
+            match(TokenType.LT);
+            number();
+            System.out.println("lt");
+            oper();
+        } else if (currentToken.type == TokenType.GT) {
+            match(TokenType.GT);
+            number();
+            System.out.println("gt");
+            oper();
+        } else if (currentToken.type == TokenType.EQ) {
+            match(TokenType.EQ);
+            number();
+            System.out.println("eq");
+            oper();
+        } else if (currentToken.type == TokenType.AND) {
+            match(TokenType.AND);
+            number();
+            System.out.println("and");
+            oper();
+        } else if (currentToken.type == TokenType.OR) {
+            match(TokenType.OR);
+            number();
+            System.out.println("or");
             oper();
         } else if (currentToken.type == TokenType.EOF) {
             // vazio
