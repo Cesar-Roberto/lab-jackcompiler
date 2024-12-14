@@ -81,7 +81,7 @@ public class Parser {
         return new ParseError();
     }
 
-    // FALTA FINALIZAR
+    
     void parseTerm() {
         printNonTerminal("term");
         switch (peekToken.type) {
@@ -109,7 +109,10 @@ public class Parser {
                     parseExpression();
                     expectPeek(TokenType.RBRACKET);
                 }
-
+                break;
+            case MINUS:
+            case NOT:
+                expectPeek(TokenType.MINUS, TokenType.NOT);
                 break;
             default:
                 throw error(peekToken, "term expected");
