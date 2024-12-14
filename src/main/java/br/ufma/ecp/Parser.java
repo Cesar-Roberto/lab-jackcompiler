@@ -106,7 +106,6 @@ public class Parser {
         return new ParseError();
     }
 
-
     void parseTerm() {
         printNonTerminal("term");
         switch (peekToken.type) {
@@ -128,6 +127,7 @@ public class Parser {
                 expectPeek(TokenType.IDENT);
 
                 if (peekTokenIs(TokenType.LPAREN) || peekTokenIs(TokenType.DOT)) {
+                    expectPeek(TokenType.DOT);
                     parseSubroutineCall();
                 } else if (peekTokenIs(TokenType.LBRACKET)) {
                     expectPeek(TokenType.LBRACKET);
@@ -135,9 +135,15 @@ public class Parser {
                     expectPeek(TokenType.RBRACKET);
                 }
                 break;
+            case LPAREN:
+                expectPeek(TokenType.LPAREN);
+                parseExpression();
+                expectPeek(TokenType.RPAREN);
+                break;
             case MINUS:
             case NOT:
                 expectPeek(TokenType.MINUS, TokenType.NOT);
+                parseTerm();
                 break;
             default:
                 throw error(peekToken, "term expected");
@@ -181,17 +187,13 @@ public class Parser {
         expectPeek(TokenType.IDENT);
         if (peekTokenIs(TokenType.LPAREN)) {
             expectPeek(TokenType.LPAREN);
-            if (!peekTokenIs(TokenType.RPAREN)) {
-                parseExpressionList();
-            }
+            parseExpressionList();
             expectPeek(TokenType.RPAREN);
         } else {
             expectPeek(TokenType.DOT);
             expectPeek(TokenType.IDENT);
             expectPeek(TokenType.LPAREN);
-            if (!peekTokenIs(TokenType.RPAREN)) {
-                parseExpressionList();
-            }
+            parseExpressionList();
             expectPeek(TokenType.RPAREN);
         }
     }
@@ -199,6 +201,8 @@ public class Parser {
     void parseExpressionList() {
         printNonTerminal("expressionList");
 
+        // Chama parseExpression apenas se eu tiver uma expressão
+        // a ser tratada
         if (!peekTokenIs(TokenType.RPAREN)) {
             parseExpression();
         }

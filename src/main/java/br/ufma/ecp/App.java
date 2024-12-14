@@ -17,12 +17,12 @@ public class App {
 
         
         String input = """
-        // é um comentario 10
-        45 \"hello\" variavel + while < , if
-        /*
-        comentario em bloco
-        */
-        42 ola
+        let exit = key;
+        while (exit) {
+            while (key) {
+                let key = key;
+                do moveSquare();
+        }
 
         """;
         Scanner scan = new Scanner (input.getBytes());
