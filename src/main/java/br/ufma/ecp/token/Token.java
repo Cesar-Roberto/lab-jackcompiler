@@ -11,6 +11,10 @@ public class Token {
         this.line = line;
     }
 
+    public String value () {
+        return type.value;
+    }
+
     public String toString() {
         var type = this.type.toString();
         String valor = lexeme;
@@ -26,7 +30,6 @@ public class Token {
         if (TokenType.isSymbol(lexeme.charAt(0)))
             type = "symbol";
 
-            //Os símbolos <, >, ", e & são impressos como &lt;  &gt;  &quot; e &amp; Para não conflitar com o significado destes símbolos no XML
             if (valor.equals(">")) {
                 valor = "&gt;" ;
             } else if (valor.equals("<")) {

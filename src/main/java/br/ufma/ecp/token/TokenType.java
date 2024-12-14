@@ -31,11 +31,19 @@ public enum TokenType {
 
      ILLEGAL;
 
+    private TokenType() {
+    }
+
      static public boolean isSymbol (char c) {
         String symbols = "{}()[].,;+-*/&|<>=~";
         return symbols.indexOf(c) > -1;
     }
 
+    private TokenType(String value) {
+        this.value = value;
+    }
+
+    public String value;
 
     static public boolean isKeyword (TokenType type) {
         List<TokenType> keywords  = 
