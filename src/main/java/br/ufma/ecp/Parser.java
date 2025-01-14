@@ -1,13 +1,5 @@
 package br.ufma.ecp;
 
-import static br.ufma.ecp.token.TokenType.CONSTRUCTOR;
-import static br.ufma.ecp.token.TokenType.DO;
-import static br.ufma.ecp.token.TokenType.IF;
-import static br.ufma.ecp.token.TokenType.LET;
-import static br.ufma.ecp.token.TokenType.LPAREN;
-import static br.ufma.ecp.token.TokenType.METHOD;
-import static br.ufma.ecp.token.TokenType.RETURN;
-import static br.ufma.ecp.token.TokenType.WHILE;
 import static br.ufma.ecp.token.TokenType.*;
 
 
@@ -123,6 +115,13 @@ public class Parser {
                 break;
             case STRING:
                 expectPeek(TokenType.STRING);
+                var strValue = currentToken.lexeme;
+                vmWriter.writePush(Segment.CONST, strValue.length());
+                vmWriter.writeCall("String.new", 1);
+                for (int i = 0; i < strValue.length(); i++) {
+                    vmWriter.writePush(Segment.CONST, strValue.charAt(i));
+                    vmWriter.writeCall("String.appendChar", 2);
+                }
                 break;
             case FALSE:
             case NULL:
