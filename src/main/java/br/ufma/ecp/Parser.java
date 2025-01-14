@@ -3,6 +3,7 @@ package br.ufma.ecp;
 import static br.ufma.ecp.token.TokenType.*;
 
 import br.ufma.ecp.SymbolTable.Kind;
+import br.ufma.ecp.SymbolTable.Symbol;
 import br.ufma.ecp.VMWriter.Command;
 import br.ufma.ecp.VMWriter.Segment;
 
@@ -111,6 +112,18 @@ public class Parser {
         return new ParseError();
     }
 
+    private Segment kind2Segment(Kind kind) {
+        if (kind == Kind.STATIC)
+            return Segment.STATIC;
+        if (kind == Kind.FIELD)
+            return Segment.THIS;
+        if (kind == Kind.VAR)
+            return Segment.LOCAL;
+        if (kind == Kind.ARG)
+            return Segment.ARG;
+        return null;
+    }
+
     void parseTerm() {
         printNonTerminal("term");
         switch (peekToken.type) {
@@ -143,13 +156,18 @@ public class Parser {
             case IDENT:
                 expectPeek(TokenType.IDENT);
 
+                Symbol sym = symTable.resolve(currentToken.lexeme);
+                
                 if (peekTokenIs(TokenType.LPAREN) || peekTokenIs(TokenType.DOT)) {
-                    expectPeek(TokenType.DOT);
                     parseSubroutineCall();
-                } else if (peekTokenIs(TokenType.LBRACKET)) {
-                    expectPeek(TokenType.LBRACKET);
-                    parseExpression();
-                    expectPeek(TokenType.RBRACKET);
+                } else { 
+                    if (peekTokenIs(TokenType.LBRACKET)) { 
+                        expectPeek(TokenType.LBRACKET);
+                        parseExpression();                        
+                        expectPeek(TokenType.RBRACKET);                       
+                    } else {
+                        vmWriter.writePush(kind2Segment(sym.kind()), sym.index());
+                    }
                 }
                 break;
             case LPAREN:
