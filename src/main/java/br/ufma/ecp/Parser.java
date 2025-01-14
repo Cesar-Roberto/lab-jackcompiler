@@ -9,9 +9,12 @@ import static br.ufma.ecp.token.TokenType.METHOD;
 import static br.ufma.ecp.token.TokenType.RETURN;
 import static br.ufma.ecp.token.TokenType.WHILE;
 
+import br.ufma.ecp.VMWriter.Segment;
+
+
 import java.util.Arrays;
 
-import javax.swing.text.Segment;
+//import javax.swing.text.Segment;
 
 import br.ufma.ecp.token.Token;
 import br.ufma.ecp.token.TokenType;
@@ -116,6 +119,7 @@ public class Parser {
         switch (peekToken.type) {
             case NUMBER:
                 expectPeek(TokenType.NUMBER);
+                vmWriter.writePush(Segment.CONST, Integer.parseInt(currentToken.lexeme));
                 break;
             case STRING:
                 expectPeek(TokenType.STRING);
@@ -450,8 +454,6 @@ public class Parser {
         }
     }
 
-    public String VMOutput() {
-        return "";
-    }
+
 
 }
