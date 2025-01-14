@@ -522,6 +522,7 @@ public void parseDo() {
 
         printNonTerminal("/parameterList");
     }
+    
     void parseSubroutineBody(String functionName, TokenType subroutineType) {
 
         printNonTerminal("subroutineBody");
@@ -529,9 +530,20 @@ public void parseDo() {
         while (peekTokenIs(VAR)) {
             parseVarDec();
         }
-				var nlocals = symTable.varCount(Kind.VAR);
+        var nlocals = symTable.varCount(Kind.VAR);
 
         vmWriter.writeFunction(functionName, nlocals);
+
+        if (subroutineType == CONSTRUCTOR) {
+            vmWriter.writePush(Segment.CONST, symTable.varCount(Kind.FIELD));
+            vmWriter.writeCall("Memory.alloc", 1);
+            vmWriter.writePop(Segment.POINTER, 0);
+        }
+
+        if (subroutineType == METHOD) {
+            vmWriter.writePush(Segment.ARG, 0);
+            vmWriter.writePop(Segment.POINTER, 0);
+        }
 
         parseStatements();
         expectPeek(RBRACE);
