@@ -123,14 +123,18 @@ public class Parser {
                     vmWriter.writeCall("String.appendChar", 2);
                 }
                 break;
-            case FALSE:
-            case NULL:
-            case TRUE:
-                expectPeek(TokenType.FALSE, TokenType.NULL, TokenType.TRUE);
-                break;
-            case THIS:
-                expectPeek(TokenType.THIS);
-                break;
+                case FALSE:
+                case NULL:
+                case TRUE:
+                    expectPeek(FALSE, NULL, TRUE);
+                    vmWriter.writePush(Segment.CONST, 0);
+                    if (currentToken.type == TRUE)
+                        vmWriter.writeArithmetic(Command.NOT);
+                    break;
+                case THIS:
+                    expectPeek(THIS);
+                    vmWriter.writePush(Segment.POINTER, 0);
+                    break;
             case IDENT:
                 expectPeek(TokenType.IDENT);
 
